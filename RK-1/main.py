@@ -1,89 +1,66 @@
-class SyntaxStructure:
-    def __init__(self, id, name):
+from typing import List
+from statistics import mean
+
+# Определение классов данных
+class СинтаксическаяКонструкция:
+    def __init__(self, id, название, описание, язык_id):
         self.id = id
-        self.name = name
+        self.название = название
+        self.описание = описание
+        self.язык_id = язык_id
 
-class ProgrammingLanguage:
-    def __init__(self, id, name, syntax_structure_id):
+class ЯзыкПрограммирования:
+    def __init__(self, id, название):
         self.id = id
-        self.name = name
-        self.syntax_structure_id = syntax_structure_id
+        self.название = название
 
-class LanguageStructureMapping:
-    def __init__(self, language_id, structure_id):
-        self.language_id = language_id
-        self.structure_id = structure_id
+class КонструкцииЯзыка:
+    def __init__(self, конструкция_id, язык_id):
+        self.конструкция_id = конструкция_id
+        self.язык_id = язык_id
 
-
-# Синтаксические конструкции
-structures = [
-    SyntaxStructure(1, "Условный оператор"),
-    SyntaxStructure(2, "Цикл"),
-    SyntaxStructure(3, "Функция"),
+# Создание тестовых данных
+языки = [
+    ЯзыкПрограммирования(1, 'Python'),
+    ЯзыкПрограммирования(2, 'JavaScript'),
+    ЯзыкПрограммирования(3, 'C++')
 ]
 
-# Языки программирования
-languages = [
-    ProgrammingLanguage(1, "Python", 1),
-    ProgrammingLanguage(2, "Python", 2),
-    ProgrammingLanguage(3, "Java", 3),
-    ProgrammingLanguage(4, "C++", 1),
-    ProgrammingLanguage(5, "JavaScript", 2),
+конструкции = [
+    СинтаксическаяКонструкция(1, 'Цикл', 'Повторение операций', 1),
+    СинтаксическаяКонструкция(2, 'Условие', 'Выбор выполнения', 1),
+    СинтаксическаяКонструкция(3, 'Функция', 'Определение подпрограммы', 2),
+    СинтаксическаяКонструкция(4, 'Массив', 'Коллекция данных', 3)
 ]
 
-# Связи между языками и синтаксическими конструкциями
-mappings = [
-    LanguageStructureMapping(1, 1),
-    LanguageStructureMapping(1, 2),
-    LanguageStructureMapping(2, 3),
-    LanguageStructureMapping(3, 1),
-    LanguageStructureMapping(4, 1),
-    LanguageStructureMapping(5, 2),
+конструкции_языков = [
+    КонструкцииЯзыка(1, 1),
+    КонструкцииЯзыка(2, 1),
+    КонструкцииЯзыка(3, 2),
+    КонструкцииЯзыка(4, 3),
 ]
-
-# Запрос 1: Выводим языки, которые используют синтаксическую конструкцию с названием, заканчивающимся на "ый"
-def get_languages_by_structure_suffix(structures, languages):
-    suffix = "ый"
-    return [
-        (language.name, structure.name)
-        for language in languages
-        for structure in structures
-        if structure.id == language.syntax_structure_id and structure.name.endswith(suffix)
-    ]
-
-# Запрос 2: Выводим среднюю зарплату (в данном случае количество языков) по синтаксическим конструкциям
-def average_languages_per_structure(structures, languages):
-    structure_count = {structure.id: 0 for structure in structures}
-    
-    for language in languages:
-        structure_count[language.syntax_structure_id] += 1
-
-    return sorted(
-        [(structure.name, count) for structure, count in zip(structures, structure_count.values())],
-        key=lambda x: x[1]
-    )
-
-# Запрос 3: Языки, которые имеют синтаксическую конструкцию, название которой начинается на "У"
-def get_languages_by_structure_prefix(structures, languages):
-    prefix = "У"
-    return [
-        (language.name, structure.name)
-        for language in languages
-        for structure in structures
-        if structure.id == language.syntax_structure_id and structure.name.startswith(prefix)
-    ]
 
 # Запрос 1
-print("Языки с конструкциями, заканчивающимися на 'ый':")
-for lang, struct in get_languages_by_structure_suffix(structures, languages):
-    print(f"Язык: {lang}, Конструкция: {struct}")
+result_1 = [
+    (конструкция.название, язык.название)
+    for конструкция in конструкции
+    for язык in языки
+    if конструкция.язык_id == язык.id and конструкция.название.endswith('ие')
+]
+print("Список конструкций, заканчивающихся на 'ие':", result_1)
 
 # Запрос 2
-print("\nСреднее количество языков по синтаксическим конструкциям (отсортировано):")
-for struct, count in average_languages_per_structure(structures, languages):
-    print(f"Конструкция: {struct}, Количество языков: {count}")
+средняя_длина_описания = [
+    (язык.название, mean([len(конструкция.описание) for конструкция in конструкции if конструкция.язык_id == язык.id]))
+    for язык in языки
+]
+средняя_длина_описания.sort(key=lambda x: x[1])
+print("Средняя длина описания конструкций по языкам:", средняя_длина_описания)
 
 # Запрос 3
-print("\nЯзыки с конструкциями, начинающимися на 'У':")
-for lang, struct in get_languages_by_structure_prefix(structures, languages):
-    print(f"Язык: {lang}, Конструкция: {struct}")
+result_3 = [
+    (язык.название, [конструкция.название for конструкция in конструкции if конструкция.язык_id == язык.id])
+    for язык in языки
+    if язык.название.startswith('P')
+]
+print("Список языков, начинающихся на 'P', и их конструкции:", result_3)
